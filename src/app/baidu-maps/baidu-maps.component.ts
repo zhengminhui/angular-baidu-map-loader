@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, ElementRef } from '@angular/core';
 import { loader } from './baidu-maps.loader';
+import { BAIDU_MAP_STYLE } from './style';
 
 declare const BMap: any;
 
@@ -10,20 +11,20 @@ declare const BMap: any;
 })
 export class BaiduMapsComponent implements OnInit, OnDestroy {
   @Input() apiKey: string;
-  @Input() center: any = {
-    lat: 22,
-    lng: 122,
-  };
+  @Input() center: any;
   @Input() zoom = 7;
   mapObj: any;
   styleJson: any;
 
-  constructor(
-    private elementRef: ElementRef,
-  ) { }
+  constructor(private elementRef: ElementRef) {}
 
   ngOnInit() {
-    this.styleJson = baidu_style;
+    this.styleJson = BAIDU_MAP_STYLE;
+    this.center = {
+      lat: 37.11,
+      lng: 119.19
+    };
+    this.zoom = 12;
     loader(this.apiKey, this.initMap.bind(this));
   }
 
@@ -31,151 +32,65 @@ export class BaiduMapsComponent implements OnInit, OnDestroy {
     const container = this.elementRef.nativeElement.querySelector('.baidu-map-container');
     const map = new BMap.Map(container);
     const point = new BMap.Point(this.center.lng, this.center.lat);
-    const marker = new BMap.Marker(point);
-    marker.addEventListener('click', () => {
-      const opts = {
-        width: 200,
-        height: 120,
-        title: 'baidu map',
-      };
-      const msg = 'this is a marker.';
-      const infoWindow = new BMap.InfoWindow(msg, opts);
-      map.openInfoWindow(infoWindow, point);
-    })
+    // const marker = new BMap.Marker(point);
+    // marker.addEventListener('click', () => {
+    //   const opts = {
+    //     width: 200,
+    //     height: 120,
+    //     title: 'baidu map'
+    //   };
+    //   const msg = 'this is a marker.';
+    //   const infoWindow = new BMap.InfoWindow(msg, opts);
+    //   map.openInfoWindow(infoWindow, point);
+    // });
     map.centerAndZoom(point, this.zoom);
     map.enableScrollWheelZoom(true);
     map.setMapStyle({
-      styleJson: this.styleJson,
+      styleJson: this.styleJson
     });
-    map.addOverlay(marker);
+    // map.addOverlay(marker);
     this.mapObj = map;
+    this.addPolyline(map);
+  }
+
+  addPolyline(map) {
+    const pointsArr = this.converToBmapPoint(polylinePoints);
+    const polyline = new BMap.Polyline(pointsArr, { strokeColor: 'blue', strokeWeight: 6, strokeOpacity: 0.5 });
+    const midPoint = polylinePoints[Math.ceil(polylinePoints.length / 2)];
+    const point = new BMap.Point(midPoint.lng, midPoint.lat);
+    polyline.addEventListener('click', () => {
+      const opts = {
+        width: 200,
+        height: 120,
+        title: 'baidu map'
+      };
+      const msg = 'this is a polyline.';
+      const infoWindow = new BMap.InfoWindow(msg, opts);
+      map.openInfoWindow(infoWindow, point);
+    });
+    map.addOverlay(polyline);
   }
 
   ngOnDestroy() {
     if (this.mapObj) {
-      console.log('destroyed' , this.mapObj);
+      console.log('destroyed', this.mapObj);
       this.mapObj.clearOverlays();
     }
   }
 
+  converToBmapPoint(rawPoints) {
+    const bMapPoint = [];
+    rawPoints.forEach(element => {
+      const point = new BMap.Point(element.lng, element.lat);
+      bMapPoint.push(point);
+    });
+    return bMapPoint;
+  }
 }
 
-const baidu_style = [
-  {
-            featureType: 'land',
-            elementType: 'geometry',
-            stylers: {
-                      color: '#212121'
-            }
-  },
-  {
-            featureType: 'building',
-            elementType: 'geometry',
-            stylers: {
-                      color: '#2b2b2b'
-            }
-  },
-  {
-            featureType: 'highway',
-            elementType: 'all',
-            stylers: {
-                      lightness: -42,
-                      saturation: -91
-            }
-  },
-  {
-            featureType: 'arterial',
-            elementType: 'geometry',
-            stylers: {
-                      lightness: -77,
-                      saturation: -94
-            }
-  },
-  {
-            featureType: 'green',
-            elementType: 'geometry',
-            stylers: {
-                      color: '#1b1b1b'
-            }
-  },
-  {
-            featureType: 'water',
-            elementType: 'geometry',
-            stylers: {
-                      color: '#181818'
-            }
-  },
-  {
-            featureType: 'subway',
-            elementType: 'geometry.stroke',
-            stylers: {
-                      color: '#181818'
-            }
-  },
-  {
-            featureType: 'railway',
-            elementType: 'geometry',
-            stylers: {
-                      lightness: -52
-            }
-  },
-  {
-            featureType: 'all',
-            elementType: 'labels.text.stroke',
-            stylers: {
-                      color: '#313131'
-            }
-  },
-  {
-            featureType: 'all',
-            elementType: 'labels.text.fill',
-            stylers: {
-                      color: '#8b8787'
-            }
-  },
-  {
-            featureType: 'manmade',
-            elementType: 'geometry',
-            stylers: {
-                      color: '#1b1b1b'
-            }
-  },
-  {
-            featureType: 'local',
-            elementType: 'geometry',
-            stylers: {
-                      lightness: -75,
-                      saturation: -91
-            }
-  },
-  {
-            featureType: 'subway',
-            elementType: 'geometry',
-            stylers: {
-                      lightness: -65
-            }
-  },
-  {
-            featureType: 'railway',
-            elementType: 'all',
-            stylers: {
-                      lightness: -40
-            }
-  },
-  {
-            featureType: 'boundary',
-            elementType: 'geometry',
-            stylers: {
-                      color: '#8b8787',
-                      weight: '1',
-                      lightness: -29
-            }
-  },
-  {
-            featureType: 'label',
-            elementType: 'all',
-            stylers: {
-                      visibility: 'off'
-            }
-  }
+const polylinePoints = [
+  { lat: 37.17, lng: 119.19 },
+  { lat: 37.12, lng: 119.19 },
+  { lat: 37.11, lng: 119.19 },
+  { lat: 37.01, lng: 119.17 }
 ];

@@ -1,13 +1,3 @@
-<ng-container *ngIf="!showMap">
-  <div class="col-xs-12">
-    <button class="btn btn" (click)="toggleShow($event)">Show</button>
-  </div>
-</ng-container>
-
-<ng-container *ngIf="showMap">
-    <div class="col-xs-12">
-        <button class="btn btn" (click)="toggleShow($event)">Hide</button>
-      </div>
-  <baidu-maps></baidu-maps> 
-</ng-container>
-
+<div class="map-container">
+  <baidu-maps></baidu-maps>
+</div>
