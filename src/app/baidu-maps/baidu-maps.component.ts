@@ -15,7 +15,7 @@ export class BaiduMapsComponent implements OnInit, OnDestroy {
   @Input() zoom = 7;
   mapObj: any;
   styleJson: any;
-  polylineArr;
+  polylineArrPoints;
 
   constructor(private elementRef: ElementRef) {}
 
@@ -25,8 +25,8 @@ export class BaiduMapsComponent implements OnInit, OnDestroy {
       lat: 37.08,
       lng: 119.48,
     };
-    this.zoom = 12;
-    this.polylineArr = polylineArr;
+    this.zoom = 11;
+    this.polylineArrPoints = polylineArrPoints;
     loader(this.apiKey, this.initMap.bind(this));
   }
 
@@ -50,11 +50,8 @@ export class BaiduMapsComponent implements OnInit, OnDestroy {
     map.setMapStyle({
       styleJson: this.styleJson,
     });
-    // map.addOverlay(marker);
     this.mapObj = map;
-    this.polylineArr.forEach(arr => {
-      this.addPolyline(map, arr);
-    });
+    this.addPolyline(map, this.polylineArrPoints);
   }
 
   addPolyline(map, polylinePoints) {
@@ -96,27 +93,13 @@ export class BaiduMapsComponent implements OnInit, OnDestroy {
   }
 }
 
-const polylineArr = [
-  [
-    { lat: 37.17, lng: 119.19 },
-    { lat: 37.12, lng: 119.19 },
-    { lat: 37.11, lng: 119.19 },
-    { lat: 37.01, lng: 119.17 },
-  ],
-  [
-    { lat: 37.12, lng: 119.49 },
-    { lat: 37.1, lng: 119.5 },
-    { lat: 37.1, lng: 119.48 },
-    { lat: 37.08, lng: 119.48 },
-    { lat: 37.07, lng: 119.47 },
-    { lat: 37.05, lng: 119.47 },
-    { lat: 37.0, lng: 119.47 },
-    { lat: 36.93, lng: 119.42 },
-  ],
-  [
-    { lat: 37.12, lng: 119.73 },
-    { lat: 37.11, lng: 119.74 },
-    { lat: 37.1, lng: 119.74 },
-    { lat: 37.08, lng: 119.74 },
-  ],
+const polylineArrPoints = [
+  { lat: 37.12, lng: 119.49 },
+  { lat: 37.1, lng: 119.5 },
+  { lat: 37.1, lng: 119.48 },
+  { lat: 37.08, lng: 119.48 },
+  { lat: 37.07, lng: 119.47 },
+  { lat: 37.05, lng: 119.47 },
+  { lat: 37.0, lng: 119.47 },
+  { lat: 36.93, lng: 119.42 },
 ];
